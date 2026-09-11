@@ -1,0 +1,4 @@
+project_id = "your-project-ref"
+
+[functions.openai-proxy]
+verify_jwt = false
