@@ -7,11 +7,10 @@ export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors">
       <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <div className="flex-1 min-w-0 flex flex-col">
-        {/* Верхняя панель — только на мобильных */}
         <header className="md:hidden sticky top-0 z-30 bg-sidebar text-white px-4 py-3 flex items-center gap-3">
           <button
             onClick={() => setMobileOpen(true)}

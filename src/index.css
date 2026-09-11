@@ -1,14 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 html, body, #root { height: 100%; }
-body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: #0f172a; }
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  overflow-x: hidden;
+  transition: background 0.2s, color 0.2s;
+}
+.dark body { background: #0b1120; color: #f1f5f9; }
+
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.dark ::-webkit-scrollbar-thumb { background: #334155; }
 
-/* ─── Стили для Markdown-ответов ИИ ──────────────── */
+/* ─── Markdown-ответы ИИ ─────────────────────────── */
 .prose-chat {
   word-break: break-word;
+  overflow-wrap: anywhere;
   line-height: 1.65;
 }
 .prose-chat > *:first-child { margin-top: 0; }
@@ -19,85 +30,110 @@ body { font-family: 'Inter', system-ui, sans-serif; background: #f8fafc; color: 
 .prose-chat h3 {
   font-weight: 600;
   color: #0f172a;
-  margin-top: 1em;
-  margin-bottom: 0.5em;
+  margin-top: 0.9em;
+  margin-bottom: 0.45em;
   line-height: 1.3;
 }
-.prose-chat h1 { font-size: 1.25rem; }
-.prose-chat h2 { font-size: 1.125rem; }
-.prose-chat h3 { font-size: 1rem; }
+.dark .prose-chat h1,
+.dark .prose-chat h2,
+.dark .prose-chat h3 { color: #f1f5f9; }
 
-.prose-chat p { margin: 0.6em 0; }
+.prose-chat h1 { font-size: 1.15rem; }
+.prose-chat h2 { font-size: 1.05rem; }
+.prose-chat h3 { font-size: 0.98rem; }
+.prose-chat p { margin: 0.5em 0; }
 
 .prose-chat ul,
 .prose-chat ol {
   margin: 0.5em 0;
-  padding-left: 1.35em;
+  padding-left: 1.25em;
 }
 .prose-chat ul { list-style: disc; }
 .prose-chat ol { list-style: decimal; }
-.prose-chat li { margin: 0.25em 0; }
+.prose-chat li { margin: 0.2em 0; }
 .prose-chat li > p { margin: 0; }
 
 .prose-chat strong { font-weight: 600; color: #0f172a; }
+.dark .prose-chat strong { color: #f1f5f9; }
 .prose-chat em { font-style: italic; }
 
 .prose-chat code {
   background: #f1f5f9;
   border-radius: 4px;
-  padding: 0.1em 0.4em;
+  padding: 0.1em 0.35em;
   font-size: 0.85em;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  word-break: break-word;
 }
+.dark .prose-chat code { background: #1e293b; color: #e2e8f0; }
+
 .prose-chat pre {
   background: #0f172a;
   color: #e2e8f0;
-  padding: 12px 14px;
+  padding: 10px 12px;
   border-radius: 10px;
   overflow-x: auto;
-  margin: 0.7em 0;
-  font-size: 0.82em;
+  margin: 0.6em 0;
+  font-size: 0.8em;
   line-height: 1.5;
+  max-width: 100%;
 }
-.prose-chat pre code {
-  background: transparent;
-  color: inherit;
-  padding: 0;
-}
+.prose-chat pre code { background: transparent; color: inherit; padding: 0; }
 
 .prose-chat blockquote {
   border-left: 3px solid #4f6ef7;
   background: #f8fafc;
-  padding: 0.5em 0.9em;
-  margin: 0.7em 0;
+  padding: 0.5em 0.85em;
+  margin: 0.6em 0;
   color: #475569;
   border-radius: 0 8px 8px 0;
 }
+.dark .prose-chat blockquote { background: #1e293b; color: #cbd5e1; }
 
 .prose-chat hr {
   border: 0;
   border-top: 1px solid #e2e8f0;
-  margin: 1em 0;
+  margin: 0.9em 0;
 }
+.dark .prose-chat hr { border-top-color: #334155; }
 
 .prose-chat a {
   color: #4f6ef7;
   text-decoration: underline;
   text-underline-offset: 2px;
+  word-break: break-all;
 }
 
-.prose-chat table {
+.md-table-wrap {
   width: 100%;
-  border-collapse: collapse;
-  margin: 0.7em 0;
-  font-size: 0.88em;
-  display: block;
+  max-width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0.6em 0;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
 }
-.prose-chat th,
-.prose-chat td {
+.dark .md-table-wrap { border-color: #334155; }
+
+.md-table-wrap table {
+  border-collapse: collapse;
+  font-size: 0.82em;
+  min-width: 100%;
+}
+.md-table-wrap th,
+.md-table-wrap td {
   border: 1px solid #e2e8f0;
   padding: 6px 10px;
   text-align: left;
+  vertical-align: top;
+  white-space: normal;
 }
-.prose-chat th { background: #f8fafc; font-weight: 600; }
+.dark .md-table-wrap th,
+.dark .md-table-wrap td { border-color: #334155; }
+
+.md-table-wrap th {
+  background: #f8fafc;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.dark .md-table-wrap th { background: #1e293b; }

@@ -1,6 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Clock, Settings, Code2, LogOut, X } from 'lucide-react'
+import { Home, FileText, Clock, Settings, Code2, LogOut, X, Sun, Moon } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { useTheme } from '../context/ThemeContext'
 
 export const Logo = ({ className = 'w-10 h-10' }) => (
   <svg viewBox="0 0 40 40" fill="none" className={className}>
@@ -12,6 +13,7 @@ export const Logo = ({ className = 'w-10 h-10' }) => (
 
 export default function Sidebar({ mobileOpen, onClose }) {
   const { signOut, isDeveloper, user } = useAuth()
+  const { theme, toggle } = useTheme()
   const navigate = useNavigate()
 
   const items = [
@@ -29,7 +31,6 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
   return (
     <>
-      {/* Тёмный фон на мобильных, когда открыт сайдбар */}
       {mobileOpen && (
         <div
           onClick={onClose}
@@ -80,6 +81,17 @@ export default function Sidebar({ mobileOpen, onClose }) {
             </NavLink>
           ))}
         </nav>
+
+        <div className="px-3 pb-3">
+          <button
+            onClick={toggle}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-sidebarHover/60 hover:text-white transition-colors"
+            aria-label="Переключить тему"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
+          </button>
+        </div>
 
         <div className="p-4 border-t border-slate-800">
           <div className="text-xs text-slate-400 truncate mb-3">{user?.email}</div>

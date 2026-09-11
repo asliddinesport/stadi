@@ -28,18 +28,20 @@ export default function Home() {
         <div className="flex justify-center mb-3 md:mb-4">
           <Logo className="w-12 h-12 md:w-16 md:h-16" />
         </div>
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">Стади</h1>
-        <p className="text-slate-500 text-sm md:text-base">
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+          Стади
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 text-sm md:text-base">
           Задавай вопросы по учебным материалам
           <br className="hidden md:block" /> и получай точные ответы с указанием источников.
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden mb-4 md:mb-6">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden mb-4 md:mb-6 transition-colors">
         <div className="p-4 md:p-6">
           <FileUpload onUploaded={handleUploaded} />
           {material && (
-            <div className="mt-4 text-sm text-slate-600 bg-slate-50 rounded-lg px-4 py-3 break-words">
+            <div className="mt-4 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3 break-words">
               ✅ Загружен материал: <b>{material.name}</b> (
               {(material.size / 1024).toFixed(1)} КБ, {material.text.length} символов)
             </div>
@@ -47,7 +49,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col transition-colors">
         <Chat
           material={material}
           onAsk={handleAsk}
