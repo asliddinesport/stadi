@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Menu } from 'lucide-react'
 import Sidebar, { Logo } from './Sidebar'
 import Footer from './Footer'
+import InstallPWA from './InstallPWA'
 
 export default function Layout({ children }) {
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -26,6 +27,8 @@ export default function Layout({ children }) {
         <main className="flex-1 min-w-0">{children}</main>
         <Footer />
       </div>
+
+      <InstallPWA />
     </div>
   )
 }
