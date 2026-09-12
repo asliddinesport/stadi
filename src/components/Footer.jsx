@@ -1,10 +1,10 @@
-import { Mail, User, ExternalLink } from 'lucide-react'
+import { Mail, User, ExternalLink, Presentation } from 'lucide-react'
 
 export default function Footer() {
   return (
     <footer className="border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 mt-6 md:mt-10 transition-colors">
       <div className="max-w-4xl mx-auto px-4 md:px-6 py-5 md:py-8 text-xs md:text-sm text-slate-600 dark:text-slate-400">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-4 md:mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-4 md:mb-6">
           <div>
             <div className="font-semibold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1.5">
               <User size={13} /> Владелец
@@ -35,6 +35,15 @@ export default function Footer() {
               className="text-brand hover:underline"
             >
               edu.susu.ru
+            </a>
+          </div>
+
+          <div>
+            <div className="font-semibold text-slate-800 dark:text-slate-200 mb-1 flex items-center gap-1.5">
+              <Presentation size={13} /> О проекте
+            </div>
+            <a href="/promo" className="text-brand hover:underline">
+              Презентация
             </a>
           </div>
         </div>

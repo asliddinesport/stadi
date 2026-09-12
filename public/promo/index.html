@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Стади — Презентация</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,sans-serif;background:#0b1120;color:#f1f5f9;overflow:hidden;height:100vh}
+.slide{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px;text-align:center;opacity:0;visibility:hidden;transition:opacity .6s,visibility .6s}
+.slide.active{opacity:1;visibility:visible}
+h1{font-size:7vw;font-weight:900;letter-spacing:-.04em;background:linear-gradient(180deg,#fff,#94a3b8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+h2{font-size:3.6vw;font-weight:800;margin-bottom:16px;line-height:1.1}
+h3{font-size:16px;font-weight:700;margin-bottom:8px}
+.sub{font-size:18px;color:#94a3b8;max-width:720px;line-height:1.55;margin-top:18px}
+.grad{background:linear-gradient(90deg,#4f6ef7,#6b84ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.eyebrow{color:#6b84ff;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:18px}
+.logo{width:120px;height:120px;margin-bottom:28px;filter:drop-shadow(0 20px 60px rgba(79,110,247,.55))}
+.tags{display:flex;gap:12px;margin-top:36px;flex-wrap:wrap;justify-content:center}
+.tag{padding:8px 16px;border-radius:999px;font-size:13px;font-weight:600}
+.tag.a{background:rgba(79,110,247,.15);color:#6b84ff}
+.tag.b{background:rgba(139,92,246,.15);color:#a78bfa}
+.tag.c{background:rgba(16,185,129,.15);color:#34d399}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;max-width:960px;margin-top:36px;width:100%}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px;text-align:left}
+.card .num{font-size:30px;font-weight:900;margin-bottom:6px}
+.card p{font-size:13px;color:#94a3b8;line-height:1.5}
+.feats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:860px;margin-top:28px;width:100%}
+.feat{display:flex;align-items:center;gap:12px;padding:13px 18px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;font-size:14px;text-align:left}
+.check{width:22px;height:22px;border-radius:50%;background:rgba(16,185,129,.2);color:#34d399;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;font-weight:700}
+.steps{display:flex;gap:20px;max-width:960px;margin-top:36px;width:100%}
+.step{flex:1;text-align:center}
+.step .n{width:56px;height:56px;margin:0 auto 14px;border-radius:50%;background:rgba(79,110,247,.15);border:2px solid #4f6ef7;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#6b84ff}
+.step p{font-size:13px;color:#94a3b8}
+.mockup{width:100%;max-width:820px;background:#0f172a;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;display:flex;text-align:left;margin-top:24px}
+.msb{width:160px;background:#0a0f1e;padding:14px 10px;border-right:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.msb-logo{display:flex;align-items:center;gap:8px;margin-bottom:18px;padding:0 4px;font-size:13px;font-weight:800}
+.msb-logo svg{width:20px;height:20px}
+.mni{padding:7px 10px;border-radius:7px;font-size:11px;color:#94a3b8;margin-bottom:2px}
+.mni.on{background:rgba(79,110,247,.15);color:#f1f5f9}
+.mmain{flex:1;padding:18px;min-width:0}
+.mtitle{font-size:14px;font-weight:700;margin-bottom:14px}
+.bubble{padding:10px 14px;border-radius:12px;font-size:12px;line-height:1.55;margin-bottom:8px;max-width:85%}
+.bu{background:#4f6ef7;color:#fff;margin-left:auto}
+.ba{background:#1e293b;color:#f1f5f9}
+.ba b{color:#6b84ff}
+.quiz-q{font-size:13px;font-weight:600;margin-bottom:12px}
+.qo{padding:9px 14px;border-radius:9px;font-size:12px;background:#1e293b;border:1px solid rgba(255,255,255,.08);margin-bottom:6px}
+.qo.ok{background:rgba(16,185,129,.15);border-color:rgba(16,185,129,.5);color:#6ee7b7}
+.qo.no{background:rgba(239,68,68,.15);border-color:rgba(239,68,68,.5);color:#fca5a5}
+.fcard{background:linear-gradient(135deg,#4f6ef7,#2563eb);padding:24px;border-radius:14px;text-align:center;color:#fff}
+.fcard .t{font-size:11px;opacity:.75;margin-bottom:8px;letter-spacing:.08em}
+.fcard .x{font-size:15px;font-weight:600}
+.mm{display:flex;flex-direction:column;gap:14px;align-items:center;padding:8px}
+.mm-root{background:#4f6ef7;color:#fff;padding:9px 20px;border-radius:999px;font-size:13px;font-weight:700}
+.mm-br{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.mm-b{background:#1e293b;border:1px solid rgba(255,255,255,.08);padding:7px 13px;border-radius:9px;font-size:11px;color:#94a3b8}
+.sbar{display:flex;align-items:flex-end;gap:4px;height:50px;margin-top:10px}
+.sbar span{flex:1;background:linear-gradient(180deg,#6b84ff,#4f6ef7);border-radius:2px 2px 0 0}
+.tgc{background:#182533;border-radius:12px;padding:14px;max-width:85%;font-size:12px;line-height:1.55;text-align:left;margin:0 auto}
+.tgc .n{color:#6b84ff;font-size:10px;font-weight:700;margin-bottom:6px}
+.road{display:flex;gap:12px;max-width:1000px;margin-top:28px;width:100%}
+.rm{flex:1;text-align:left;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px}
+.rmt{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;margin-bottom:12px}
+.rmt.now{background:rgba(16,185,129,.15);color:#34d399}
+.rmt.next{background:rgba(79,110,247,.15);color:#6b84ff}
+.rmt.fut{background:rgba(139,92,246,.15);color:#a78bfa}
+.rm ul{list-style:none}
+.rm li{font-size:12px;color:#94a3b8;padding:5px 0 5px 14px;position:relative}
+.rm li:before{content:'·';position:absolute;left:3px;color:#6b84ff;font-weight:700;font-size:16px}
+.contacts{display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;justify-content:center}
+.contact{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:14px 20px;text-decoration:none;color:#f1f5f9}
+.contact .ic{width:38px;height:38px;border-radius:9px;background:rgba(79,110,247,.15);display:flex;align-items:center;justify-content:center;font-size:16px;color:#6b84ff;font-weight:800}
+.contact .l{font-size:10px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em}
+.contact .v{font-size:13px;font-weight:600;margin-top:2px}
+.nav{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:10px;align-items:center;background:rgba(15,23,42,.85);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:6px 14px;font-size:12px;color:#94a3b8;z-index:100}
+.nav button{background:none;border:none;color:#94a3b8;cursor:pointer;font-size:14px;padding:5px 9px;border-radius:6px}
+.nav button:hover{background:rgba(255,255,255,.1);color:#fff}
+.counter{color:#fff;font-weight:600;padding:0 4px}
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.06);z-index:100}
+.progress-fill{height:100%;background:linear-gradient(90deg,#4f6ef7,#6b84ff);width:0;transition:width .5s}
+@media (max-width:768px){
+  h1{font-size:14vw}h2{font-size:8vw}
+  .grid,.grid.c4{grid-template-columns:1fr 1fr}
+  .feats{grid-template-columns:1fr}
+  .steps{flex-direction:column}
+  .road{flex-direction:column}
+  .msb{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="progress-fill" id="progress"></div></div>
+
+<section class="slide active">
+<svg class="logo" viewBox="0 0 40 40"><path d="M4 6 L18 2 L18 34 L4 38 Z" fill="#4f6ef7"/><path d="M22 2 L36 6 L36 38 L22 34 Z" fill="#2563eb"/><path d="M18 2 L22 2 L22 34 L18 34 Z" fill="#1e40af" opacity=".6"/></svg>
+<h1>Стади</h1>
+<p class="sub">ИИ-помощник в обучении, который читает ваши лекции<br>и отвечает на вопросы по ним — со ссылками на источник</p>
+<div class="tags">
+<span class="tag a">для студентов</span>
+<span class="tag b">бесплатно</span>
+<span class="tag c">работает в РФ</span>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Проблема</div>
+<h2>Студент тратит <span class="grad">часы</span><br>на поиск ответа</h2>
+<p class="sub">Конспекты на 100 страниц. Лекции в PDF. Ответы разбросаны — найти их быстрее в Google, чем в своих же файлах.</p>
+<div class="grid">
+<div class="card"><div class="num" style="color:#f87171">4 ч</div><p>в неделю уходит на поиск ответов в конспектах</p></div>
+<div class="card"><div class="num" style="color:#fbbf24">60%</div><p>информации из лекций забывается к сессии</p></div>
+<div class="card"><div class="num" style="color:#a78bfa">0</div><p>инструментов, которые понимают именно ваш материал</p></div>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Решение</div>
+<h2>Загрузи материал. Задай вопрос.<br><span class="grad">Получи ответ.</span></h2>
+<div class="steps">
+<div class="step"><div class="n">1</div><h3>Загрузите файл</h3><p>PDF или DOCX — до 200 000 символов</p></div>
+<div class="step"><div class="n">2</div><h3>Спросите что угодно</h3><p>Текстом или голосом</p></div>
+<div class="step"><div class="n">3</div><h3>Получите ответ</h3><p>Со ссылками на части документа</p></div>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Как это выглядит</div>
+<h2>Чат со Стади</h2>
+<div class="mockup">
+<div class="msb">
+<div class="msb-logo">
+<svg viewBox="0 0 40 40"><path d="M4 6 L18 2 L18 34 L4 38 Z" fill="#4f6ef7"/><path d="M22 2 L36 6 L36 38 L22 34 Z" fill="#2563eb"/></svg>
+<span>Стади</span>
+</div>
+<div class="mni on">Главная</div>
+<div class="mni">История чатов</div>
+<div class="mni">Материалы</div>
+<div class="mni">Расписание</div>
+<div class="mni">Конспект</div>
+<div class="mni">Экзаменатор</div>
+</div>
+<div class="mmain">
+<div class="mtitle">КОНСПЕКТ лекций.pdf</div>
+<div class="bubble ba"><b>Стади</b><br>Привет! Загрузите материал — отвечу на вопросы по нему.</div>
+<div class="bubble bu">Что такое переобучение модели?</div>
+<div class="bubble ba"><b>Переобучение</b> — когда модель запоминает тренировочные данные, а не учится общим закономерностям.<br><br><b>Симптомы:</b> низкая ошибка на обучении, высокая на тесте.</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Инструменты</div>
+<h2><span class="grad">Экзаменатор</span></h2>
+<div class="mockup" style="max-width:620px">
+<div class="mmain">
+<div class="mtitle">Вопрос 3 из 10</div>
+<div class="quiz-q">Что такое градиентный спуск?</div>
+<div class="qo">Метод поиска минимума функции потерь</div>
+<div class="qo ok">Итеративная оптимизация параметров</div>
+<div class="qo no">Случайный выбор весов модели</div>
+<div class="qo">Регуляризация нейронной сети</div>
+</div>
+</div>
+<p class="sub" style="font-size:15px;margin-top:20px">5–20 вопросов по вашему материалу · объяснение каждого ответа</p>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Запоминай эффективно</div>
+<h2><span class="grad">Флеш-карточки</span></h2>
+<div style="max-width:440px;width:100%;margin-top:24px">
+<div class="fcard">
+<div class="t">ОПРЕДЕЛЕНИЕ</div>
+<div class="x">Переобучение модели</div>
+</div>
+<div class="fcard" style="background:#1e293b;margin-top:14px">
+<div class="t" style="color:#6b84ff">ОТВЕТ</div>
+<div class="x" style="font-weight:400;font-size:14px;line-height:1.5;color:#cbd5e1">Модель слишком точно подстроилась под тренировочные данные и плохо работает на новых примерах.</div>
+</div>
+</div>
+<p class="sub" style="font-size:15px;margin-top:20px">Прогресс-бар · отметки Знаю/Не знаю · 3D-переворот</p>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Визуализация</div>
+<h2><span class="grad">Mind map</span> из лекции</h2>
+<div class="mockup" style="max-width:720px">
+<div class="mmain">
+<div class="mm">
+<div class="mm-root">Машинное обучение</div>
+<div class="mm-br">
+<div class="mm-b">Обучение с учителем</div>
+<div class="mm-b">Без учителя</div>
+<div class="mm-b">С подкреплением</div>
+<div class="mm-b">Нейронные сети</div>
+<div class="mm-b">Ансамбли</div>
+</div>
+</div>
+</div>
+</div>
+<p class="sub" style="font-size:15px;margin-top:20px">Автоматическая схема ключевых идей · экспорт SVG</p>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Полный арсенал</div>
+<h2>Всё, что уже <span class="grad">работает</span></h2>
+<div class="feats">
+<div class="feat"><span class="check">+</span>Чат с ИИ по документу</div>
+<div class="feat"><span class="check">+</span>Голосовой ввод вопросов</div>
+<div class="feat"><span class="check">+</span>Конспект больших документов</div>
+<div class="feat"><span class="check">+</span>Режим «Только документ»</div>
+<div class="feat"><span class="check">+</span>Экзаменатор с оценками</div>
+<div class="feat"><span class="check">+</span>Флеш-карточки</div>
+<div class="feat"><span class="check">+</span>Mind map в один клик</div>
+<div class="feat"><span class="check">+</span>Перевод на 8 языков</div>
+<div class="feat"><span class="check">+</span>История чатов</div>
+<div class="feat"><span class="check">+</span>Расписание + Telegram</div>
+<div class="feat"><span class="check">+</span>Экспорт чата в PDF</div>
+<div class="feat"><span class="check">+</span>Тёмная тема + PWA</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Напоминания</div>
+<h2><span class="grad">Telegram-бот</span></h2>
+<div class="mockup" style="max-width:560px;display:block;padding:22px">
+<div class="tgc">
+<div class="n">СТАДИ</div>
+<b>Напоминание</b><br><br>
+<b>завтра</b><br>
+· Зачёт по матанализу (Математика)<br><br>
+<b>через 3 дня</b><br>
+· Реферат по философии
+</div>
+</div>
+<p class="sub" style="font-size:15px;margin-top:20px">Привязка через 6-значный код · напоминания по расписанию</p>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Для владельца</div>
+<h2>Developer <span class="grad">Dashboard</span></h2>
+<div class="mockup" style="max-width:760px">
+<div class="mmain">
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px">
+<div style="background:#1e293b;padding:12px;border-radius:10px"><div style="font-size:9px;color:#94a3b8">ПОЛЬЗОВАТЕЛИ</div><div style="font-size:20px;font-weight:800;color:#6b84ff;margin-top:3px">128</div></div>
+<div style="background:#1e293b;padding:12px;border-radius:10px"><div style="font-size:9px;color:#94a3b8">МАТЕРИАЛЫ</div><div style="font-size:20px;font-weight:800;color:#34d399;margin-top:3px">342</div></div>
+<div style="background:#1e293b;padding:12px;border-radius:10px"><div style="font-size:9px;color:#94a3b8">ЧАТЫ</div><div style="font-size:20px;font-weight:800;color:#a78bfa;margin-top:3px">89</div></div>
+<div style="background:#1e293b;padding:12px;border-radius:10px"><div style="font-size:9px;color:#94a3b8">СООБЩЕНИЯ</div><div style="font-size:20px;font-weight:800;color:#f472b6;margin-top:3px">1240</div></div>
+</div>
+<div style="font-size:11px;color:#94a3b8;margin-bottom:6px">Активность за 14 дней</div>
+<div class="sbar">
+<span style="height:35%"></span><span style="height:55%"></span><span style="height:42%"></span><span style="height:78%"></span><span style="height:60%"></span><span style="height:88%"></span><span style="height:70%"></span><span style="height:50%"></span><span style="height:65%"></span><span style="height:80%"></span>
+</div>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Под капотом</div>
+<h2>Современный <span class="grad">стек</span></h2>
+<div class="grid c4">
+<div class="card" style="text-align:center"><div style="font-size:28px;margin-bottom:6px">R</div><h3>React + Vite</h3><p>Мгновенная сборка</p></div>
+<div class="card" style="text-align:center"><div style="font-size:28px;margin-bottom:6px">S</div><h3>Supabase</h3><p>Auth, БД, Functions</p></div>
+<div class="card" style="text-align:center"><div style="font-size:28px;margin-bottom:6px">G</div><h3>Groq AI</h3><p>GPT-OSS 20B / 120B</p></div>
+<div class="card" style="text-align:center"><div style="font-size:28px;margin-bottom:6px">V</div><h3>Vercel</h3><p>Автодеплой, CDN</p></div>
+</div>
+<p class="sub" style="font-size:14px;margin-top:26px">Работает из РФ без VPN · лимиты Groq достаточны для 200+ студентов</p>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Что дальше</div>
+<h2>Дорожная <span class="grad">карта</span></h2>
+<div class="road">
+<div class="rm">
+<div class="rmt now">Сейчас</div>
+<ul>
+<li>Чат с ИИ по документу</li>
+<li>Экзаменатор и карточки</li>
+<li>Mind map и конспект</li>
+<li>История чатов</li>
+<li>Telegram-напоминания</li>
+<li>PWA + тёмная тема</li>
+</ul>
+</div>
+<div class="rm">
+<div class="rmt next">3 месяца</div>
+<ul>
+<li>Streaming ответов</li>
+<li>Векторный поиск</li>
+<li>Cmd+K палитра</li>
+<li>Распознавание конспектов</li>
+<li>AI-собеседник для языков</li>
+<li>Генерация задач</li>
+</ul>
+</div>
+<div class="rm">
+<div class="rmt fut">2027</div>
+<ul>
+<li>Групповые подписки для вузов</li>
+<li>Freemium + Pro-тариф</li>
+<li>Мобильные приложения</li>
+<li>Интеграция с edu.susu.ru</li>
+<li>Мультимодальность</li>
+<li>Публичный API</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section class="slide">
+<div class="eyebrow">Присоединяйтесь</div>
+<h2>Учитесь <span class="grad">умнее</span></h2>
+<p class="sub" style="font-size:16px">Открыт для сотрудничества, идей и предложений</p>
+<div class="contacts">
+<a class="contact" href="mailto:asliddinhusniddinov240@gmail.com">
+<div class="ic">@</div>
+<div><div class="l">Сотрудничество</div><div class="v">asliddinhusniddinov240@gmail.com</div></div>
+</a>
+<a class="contact" href="https://edu.susu.ru" target="_blank">
+<div class="ic">E</div>
+<div><div class="l">Партнёр</div><div class="v">edu.susu.ru</div></div>
+</a>
+</div>
+<div style="margin-top:32px;padding-top:26px;border-top:1px solid rgba(255,255,255,.08);max-width:540px;width:100%">
+<div style="font-size:12px;color:#94a3b8">Владелец проекта</div>
+<div style="font-size:19px;font-weight:700;margin-top:4px">Хусниддинов Аслиддин</div>
+</div>
+<div style="margin-top:26px;font-size:26px;font-weight:900" class="grad">stadi-asld.vercel.app</div>
+</section>
+
+<div class="nav">
+<button id="bp">&#9664;</button>
+<span class="counter" id="c">1 / 13</span>
+<button id="bn">&#9654;</button>
+<button id="bpl">&#9654;</button>
+</div>
+
+<script>
+(function(){
+  var s=document.querySelectorAll('.slide');
+  var pr=document.getElementById('progress');
+  var c=document.getElementById('c');
+  var bp=document.getElementById('bp');
+  var bn=document.getElementById('bn');
+  var bpl=document.getElementById('bpl');
+  var i=0,playing=false,timer=null;
+  function up(){
+    c.textContent=(i+1)+' / '+s.length;
+    pr.style.width=((i+1)/s.length*100)+'%';
+  }
+  function go(n){
+    if(n<0)n=s.length-1;
+    if(n>=s.length)n=0;
+    s[i].classList.remove('active');
+    i=n;
+    s[i].classList.add('active');
+    up();
+  }
+  function nx(){go(i+1)}
+  function pv(){go(i-1)}
+  function tp(){
+    if(playing){clearInterval(timer);playing=false;bpl.innerHTML='&#9654;'}
+    else{playing=true;bpl.innerHTML='&#10074;&#10074;';timer=setInterval(function(){if(i===s.length-1){tp();return}nx()},5000)}
+  }
+  bp.addEventListener('click',pv);
+  bn.addEventListener('click',nx);
+  bpl.addEventListener('click',tp);
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();nx()}
+    if(e.key==='ArrowLeft'){e.preventDefault();pv()}
+    if(e.key==='Home')go(0);
+    if(e.key==='End')go(s.length-1);
+    if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen()}
+  });
+  var tx=0;
+  document.addEventListener('touchstart',function(e){tx=e.touches[0].clientX},{passive:true});
+  document.addEventListener('touchend',function(e){
+    var dx=e.changedTouches[0].clientX-tx;
+    if(Math.abs(dx)>50){dx<0?nx():pv()}
+  });
+  up();
+})();
+</script>
+</body>
+</html>

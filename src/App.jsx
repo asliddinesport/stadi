@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
+import Welcome from './pages/Welcome'
+import Promo from './pages/Promo'
 import Home from './pages/Home'
 import ChatList from './pages/ChatList'
 import ChatView from './pages/ChatView'
@@ -26,7 +28,12 @@ export default function App() {
 
   return (
     <Routes>
+      {/* Публичные */}
+      <Route path="/welcome" element={<Welcome />} />
+      <Route path="/promo" element={<Promo />} />
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
+
+      {/* Приватные */}
       <Route path="/" element={withLayout(<Home />)} />
       <Route path="/chats" element={withLayout(<ChatList />)} />
       <Route path="/chat/:id" element={withLayout(<ChatView />)} />
@@ -42,7 +49,9 @@ export default function App() {
         path="/developer"
         element={<ProtectedRoute developerOnly><Layout><Developer /></Layout></ProtectedRoute>}
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+
+      {/* Fallback: если не залогинен — на /welcome, иначе на / */}
+      <Route path="*" element={<Navigate to={user ? '/' : '/welcome'} replace />} />
     </Routes>
   )
 }
