@@ -5,6 +5,7 @@ import { Logo } from '../components/Sidebar'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { useDocument } from '../context/DocumentContext'
+import { sanitizeText } from '../lib/sanitize'
 
 export default function Home() {
   const { user } = useAuth()
@@ -13,14 +14,23 @@ export default function Home() {
 
   const handleUploaded = async (m) => {
     setActiveMaterial(m)
-    if (user)
-      await supabase
-        .from('materials')
-        .insert({ user_id: user.id, name: m.name, content: m.text.slice(0, 100000) })
+    if (user) {
+      await supabase.from('materials').insert({
+        user_id: user.id,
+        name: sanitizeText(m.name),
+        content: sanitizeText(m.text.slice(0, 100000)),
+      })
+    }
   }
 
   const handleAsk = async ({ question, answer }) => {
-    if (user) await supabase.from('history').insert({ user_id: user.id, question, answer })
+    if (user) {
+      await supabase.from('history').insert({
+        user_id: user.id,
+        question: sanitizeText(question),
+        answer: sanitizeText(answer),
+      })
+    }
   }
 
   return (

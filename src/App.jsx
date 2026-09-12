@@ -1,6 +1,8 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Home from './pages/Home'
+import ChatList from './pages/ChatList'
+import ChatView from './pages/ChatView'
 import Materials from './pages/Materials'
 import History from './pages/History'
 import Settings from './pages/Settings'
@@ -29,6 +31,8 @@ export default function App() {
     <Routes>
       <Route path="/login" element={user ? <Navigate to="/" replace /> : <Login />} />
       <Route path="/" element={withLayout(<Home />)} />
+      <Route path="/chats" element={withLayout(<ChatList />)} />
+      <Route path="/chat/:id" element={withLayout(<ChatView />)} />
       <Route path="/materials" element={withLayout(<Materials />)} />
       <Route path="/history" element={withLayout(<History />)} />
       <Route path="/settings" element={withLayout(<Settings />)} />

@@ -1,10 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   Home, FileText, Clock, Settings, Code2, LogOut, X, Sun, Moon,
-  BookOpen, GraduationCap, Layers, Network,
+  BookOpen, GraduationCap, Layers, Network, MessageSquare, Plus,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
+import { useChats } from '../context/ChatContext'
 
 export const Logo = ({ className = 'w-10 h-10' }) => (
   <svg viewBox="0 0 40 40" fill="none" className={className}>
@@ -17,12 +18,13 @@ export const Logo = ({ className = 'w-10 h-10' }) => (
 export default function Sidebar({ mobileOpen, onClose }) {
   const { signOut, isDeveloper, user } = useAuth()
   const { theme, toggle } = useTheme()
+  const { setActiveChatId } = useChats()
   const navigate = useNavigate()
 
   const mainItems = [
     { to: '/', icon: Home, label: 'Главная' },
+    { to: '/chats', icon: MessageSquare, label: 'История чатов' },
     { to: '/materials', icon: FileText, label: 'Мои материалы' },
-    { to: '/history', icon: Clock, label: 'История' },
   ]
 
   const toolItems = [
@@ -32,14 +34,18 @@ export default function Sidebar({ mobileOpen, onClose }) {
     { to: '/mindmap', icon: Network, label: 'Mind map' },
   ]
 
-  const bottomItems = [
-    { to: '/settings', icon: Settings, label: 'Настройки' },
-  ]
+  const bottomItems = [{ to: '/settings', icon: Settings, label: 'Настройки' }]
   if (isDeveloper) bottomItems.push({ to: '/developer', icon: Code2, label: 'Developer' })
 
   const handleLogout = async () => {
     await signOut()
     navigate('/login')
+  }
+
+  const startNewChat = () => {
+    setActiveChatId(null)
+    navigate('/')
+    onClose?.()
   }
 
   const renderItem = ({ to, icon: Icon, label }) => (
@@ -87,6 +93,15 @@ export default function Sidebar({ mobileOpen, onClose }) {
             aria-label="Закрыть меню"
           >
             <X size={20} />
+          </button>
+        </div>
+
+        <div className="px-3 mb-3">
+          <button
+            onClick={startNewChat}
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-brand hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+          >
+            <Plus size={16} /> Новый чат
           </button>
         </div>
 

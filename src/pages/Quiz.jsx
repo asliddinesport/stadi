@@ -1,15 +1,36 @@
-import { useState } from 'react'
-import { GraduationCap, Loader2, RefreshCw, Check, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import {
+  GraduationCap, Loader2, RefreshCw, Check, X, Save, Sparkles,
+} from 'lucide-react'
 import { useDocument } from '../context/DocumentContext'
 import { generateQuiz } from '../lib/ai'
+import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
+
+const COUNTS = [5, 10, 15, 20]
 
 export default function Quiz() {
+  const { user } = useAuth()
   const { activeMaterial } = useDocument()
+  const [count, setCount] = useState(5)
   const [questions, setQuestions] = useState([])
   const [answers, setAnswers] = useState({})
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [finished, setFinished] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [results, setResults] = useState([])
+
+  const loadResults = async () => {
+    if (!user) return
+    const { data } = await supabase
+      .from('quiz_results')
+      .select('id, material_name, total, correct, created_at')
+      .order('created_at', { ascending: false })
+      .limit(10)
+    setResults(data || [])
+  }
+  useEffect(() => { loadResults() }, [user])
 
   const start = async () => {
     if (!activeMaterial?.text) {
@@ -17,15 +38,20 @@ export default function Quiz() {
       return
     }
     setBusy(true); setError('')
-    setQuestions([]); setAnswers({}); setFinished(false)
+    setQuestions([]); setAnswers({}); setFinished(false); setSaved(false)
     try {
-      const { questions } = await generateQuiz(activeMaterial.text, { count: 5 })
-      setQuestions(questions || [])
+      const { questions: qs } = await generateQuiz(activeMaterial.text, { count })
+      setQuestions(qs || [])
     } catch (e) {
       setError(e.message)
     } finally {
       setBusy(false)
     }
+  }
+
+  const refreshQuestions = async () => {
+    // Обновить только вопросы, сохранив количество
+    await start()
   }
 
   const select = (qi, oi) => {
@@ -35,10 +61,23 @@ export default function Quiz() {
 
   const finish = () => setFinished(true)
 
+  const saveResult = async () => {
+    if (!user || !questions.length) return
+    await supabase.from('quiz_results').insert({
+      user_id: user.id,
+      material_name: activeMaterial?.name || 'без материала',
+      total: questions.length,
+      correct: score,
+    })
+    setSaved(true)
+    loadResults()
+  }
+
   const score = questions.reduce(
-    (s, q, i) => s + (answers[i] === q.correct ? 1 : 0),
-    0,
+    (s, q, i) => s + (answers[i] === q.correct ? 1 : 0), 0,
   )
+
+  const pct = questions.length ? Math.round((score / questions.length) * 100) : 0
 
   return (
     <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-10">
@@ -46,9 +85,6 @@ export default function Quiz() {
         <GraduationCap className="text-brand" />
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Экзаменатор</h1>
       </div>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">
-        ИИ составит тест по вашему материалу и оценит ответы.
-      </p>
 
       {!activeMaterial && (
         <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900 rounded-xl px-4 py-3 text-sm text-amber-800 dark:text-amber-200 mb-4">
@@ -57,13 +93,33 @@ export default function Quiz() {
       )}
 
       {!questions.length && !busy && (
-        <button
-          onClick={start}
-          disabled={!activeMaterial}
-          className="w-full bg-brand hover:bg-blue-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl inline-flex items-center justify-center gap-2 mb-4"
-        >
-          <GraduationCap size={18} /> Начать тест
-        </button>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 md:p-6">
+          <div className="text-sm text-slate-600 dark:text-slate-300 mb-3">
+            Сколько вопросов?
+          </div>
+          <div className="flex gap-2 mb-5">
+            {COUNTS.map((n) => (
+              <button
+                key={n}
+                onClick={() => setCount(n)}
+                className={`flex-1 py-3 rounded-xl border text-sm font-medium transition-colors ${
+                  count === n
+                    ? 'bg-brand border-brand text-white'
+                    : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-brand/50'
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+          </div>
+          <button
+            onClick={start}
+            disabled={!activeMaterial}
+            className="w-full bg-brand hover:bg-blue-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl inline-flex items-center justify-center gap-2"
+          >
+            <Sparkles size={18} /> Начать тест
+          </button>
+        </div>
       )}
 
       {busy && (
@@ -81,10 +137,16 @@ export default function Quiz() {
       {questions.length > 0 && (
         <>
           {finished && (
-            <div className="bg-brand/10 border border-brand/30 rounded-xl px-5 py-4 mb-5 text-center">
-              <div className="text-slate-700 dark:text-slate-200 text-sm">Ваш результат</div>
-              <div className="text-3xl font-bold text-brand mt-1">
+            <div className="relative overflow-hidden bg-gradient-to-br from-brand to-blue-500 text-white rounded-2xl px-6 py-8 mb-5 text-center">
+              <div className="text-sm opacity-90">Ваш результат</div>
+              <div className="text-5xl font-bold mt-1">
                 {score} / {questions.length}
+              </div>
+              <div className="text-sm opacity-90 mt-1">{pct}%</div>
+              <div className="mt-3 text-xs opacity-80">
+                {pct >= 80 ? '🏆 Отличный результат!' :
+                 pct >= 60 ? '👍 Хорошо, но есть что улучшить' :
+                 '📚 Стоит повторить материал'}
               </div>
             </div>
           )}
@@ -133,25 +195,67 @@ export default function Quiz() {
             ))}
           </div>
 
-          <div className="flex gap-3 mt-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6">
             {!finished ? (
               <button
                 onClick={finish}
                 disabled={Object.keys(answers).length < questions.length}
-                className="flex-1 bg-brand hover:bg-blue-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl"
+                className="md:col-span-3 bg-brand hover:bg-blue-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl"
               >
                 Завершить и проверить
               </button>
             ) : (
-              <button
-                onClick={start}
-                className="flex-1 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium py-3 rounded-xl inline-flex items-center justify-center gap-2"
-              >
-                <RefreshCw size={16} /> Пройти заново
-              </button>
+              <>
+                <button
+                  onClick={start}
+                  className="bg-brand hover:bg-blue-600 text-white font-medium py-3 rounded-xl inline-flex items-center justify-center gap-2"
+                >
+                  <RefreshCw size={16} /> Пройти ещё раз
+                </button>
+                <button
+                  onClick={refreshQuestions}
+                  disabled={busy}
+                  className="bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-medium py-3 rounded-xl inline-flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  <RefreshCw size={16} /> Обновить тест
+                </button>
+                <button
+                  onClick={saveResult}
+                  disabled={saved}
+                  className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-60 text-white font-medium py-3 rounded-xl inline-flex items-center justify-center gap-2"
+                >
+                  <Save size={16} /> {saved ? 'Сохранено' : 'Сохранить результат'}
+                </button>
+              </>
             )}
           </div>
         </>
+      )}
+
+      {results.length > 0 && (
+        <div className="mt-10">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
+            Последние результаты
+          </h2>
+          <div className="space-y-2">
+            {results.map((r) => (
+              <div
+                key={r.id}
+                className="flex items-center justify-between bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-3 text-sm"
+              >
+                <div className="min-w-0">
+                  <div className="text-slate-800 dark:text-slate-100 truncate">{r.material_name}</div>
+                  <div className="text-xs text-slate-400">
+                    {new Date(r.created_at).toLocaleString('ru-RU')}
+                  </div>
+                </div>
+                <div className={`font-bold ${r.correct / r.total >= 0.7 ? 'text-emerald-500' : 'text-amber-500'}`}>
+                  {r.correct} / {r.total}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   )

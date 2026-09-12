@@ -228,3 +228,28 @@ export async function translateText(text, targetLang) {
     { role: 'user', content: text },
   ], 0.2)
 }
+
+// ─────────────────────────────────────────────
+// 7. Только по документу (без ИИ-фантазий)
+// ─────────────────────────────────────────────
+export async function askDocumentOnly({ question, context }) {
+  const relevant = selectRelevantContext(context || '', question, 5000)
+  if (!relevant) {
+    return {
+      answer: 'В загруженном документе нет информации по этому вопросу.',
+      sources: [],
+    }
+  }
+
+  const sys = `Ты — Стади. Отвечай ТОЛЬКО на основе предоставленного текста.
+Если ответа в тексте нет — так и скажи: «В документе нет ответа на этот вопрос».
+Не используй свои общие знания. Не придумывай.
+Формат: Markdown, списки, цитаты из текста в кавычках.`
+
+  const answer = await callAI([
+    { role: 'system', content: sys },
+    { role: 'user', content: `Вопрос: ${question}\n\nТекст документа:\n${relevant}` },
+  ], 0.2)
+
+  return { answer, sources: ['Только загруженный материал'] }
+}
