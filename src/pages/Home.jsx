@@ -4,14 +4,15 @@ import Chat from '../components/Chat'
 import { Logo } from '../components/Sidebar'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
+import { useDocument } from '../context/DocumentContext'
 
 export default function Home() {
   const { user } = useAuth()
-  const [material, setMaterial] = useState(null)
+  const { activeMaterial, setActiveMaterial } = useDocument()
   const [messages, setMessages] = useState([])
 
   const handleUploaded = async (m) => {
-    setMaterial(m)
+    setActiveMaterial(m)
     if (user)
       await supabase
         .from('materials')
@@ -37,21 +38,22 @@ export default function Home() {
         </p>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden mb-4 md:mb-6 transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden mb-4 md:mb-6">
         <div className="p-4 md:p-6">
           <FileUpload onUploaded={handleUploaded} />
-          {material && (
+          {activeMaterial && (
             <div className="mt-4 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800 rounded-lg px-4 py-3 break-words">
-              ✅ Загружен материал: <b>{material.name}</b> (
-              {(material.size / 1024).toFixed(1)} КБ, {material.text.length} символов)
+              ✅ Загружен материал: <b>{activeMaterial.name}</b> (
+              {(activeMaterial.size / 1024).toFixed(1)} КБ,{' '}
+              {activeMaterial.text.length} символов)
             </div>
           )}
         </div>
       </div>
 
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col transition-colors">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 overflow-hidden h-[calc(100vh-280px)] md:h-[600px] flex flex-col">
         <Chat
-          material={material}
+          material={activeMaterial}
           onAsk={handleAsk}
           messages={messages}
           setMessages={setMessages}

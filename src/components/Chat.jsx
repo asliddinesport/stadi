@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import {
   Paperclip, Send, Mic, MicOff, Copy, Check,
-  Share2, Download, Sparkles,
+  Share2, Download, Sparkles, Languages,
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Logo } from './Sidebar'
-import { askAI } from '../lib/ai'
+import { askAI, translateText } from '../lib/ai'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { exportChatToPDF } from '../lib/exportChat'
 import { useAuth } from '../context/AuthContext'
@@ -20,11 +20,25 @@ const markdownComponents = {
   a: ({ node, ...props }) => <a {...props} target="_blank" rel="noreferrer" />,
 }
 
+const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'zh', label: '中文' },
+  { code: 'es', label: 'Español' },
+  { code: 'de', label: 'Deutsch' },
+  { code: 'fr', label: 'Français' },
+  { code: 'ar', label: 'العربية' },
+  { code: 'kk', label: 'Қазақша' },
+  { code: 'uz', label: 'Oʻzbekcha' },
+]
+
 export default function Chat({ material, onAsk, messages, setMessages }) {
   const { user } = useAuth()
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [copiedIdx, setCopiedIdx] = useState(null)
+  const [translations, setTranslations] = useState({}) // { [msgIndex]: { lang, text } }
+  const [translating, setTranslating] = useState(null)
+  const [openLangMenu, setOpenLangMenu] = useState(null) // индекс сообщения с открытым меню
   const endRef = useRef(null)
 
   const voice = useVoiceInput({
@@ -34,6 +48,13 @@ export default function Chat({ material, onAsk, messages, setMessages }) {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, busy])
+
+  // Закрытие языкового меню по клику снаружи
+  useEffect(() => {
+    const close = () => setOpenLangMenu(null)
+    window.addEventListener('click', close)
+    return () => window.removeEventListener('click', close)
+  }, [])
 
   const send = async (text) => {
     const q = (text ?? input).trim()
@@ -70,7 +91,7 @@ export default function Chat({ material, onAsk, messages, setMessages }) {
     if (navigator.share) {
       try { await navigator.share({ title: 'Стади', text }) } catch (_) {}
     } else {
-      await copyMessage(text)
+      await navigator.clipboard.writeText(text)
       alert('Скопировано в буфер обмена')
     }
   }
@@ -82,6 +103,28 @@ export default function Chat({ material, onAsk, messages, setMessages }) {
       materialName: material?.name,
       userName: user?.email,
     })
+  }
+
+  const translate = async (idx, text, langLabel) => {
+    setOpenLangMenu(null)
+    // Повторный клик по тому же языку — убрать перевод
+    if (translations[idx]?.lang === langLabel) {
+      setTranslations((t) => {
+        const copy = { ...t }
+        delete copy[idx]
+        return copy
+      })
+      return
+    }
+    setTranslating(idx)
+    try {
+      const result = await translateText(text, langLabel)
+      setTranslations((t) => ({ ...t, [idx]: { lang: langLabel, text: result } }))
+    } catch (e) {
+      alert('Ошибка перевода: ' + e.message)
+    } finally {
+      setTranslating(null)
+    }
   }
 
   const examples = [
@@ -160,23 +203,67 @@ export default function Chat({ material, onAsk, messages, setMessages }) {
               </div>
 
               {m.role === 'assistant' && (
-                <div className="mt-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={() => copyMessage(m.content, i)}
-                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand px-2 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-                    title="Скопировать"
-                  >
-                    {copiedIdx === i ? <Check size={12} /> : <Copy size={12} />}
-                    {copiedIdx === i ? 'Скопировано' : 'Копировать'}
-                  </button>
-                  <button
-                    onClick={() => shareMessage(m.content)}
-                    className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand px-2 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
-                    title="Поделиться"
-                  >
-                    <Share2 size={12} /> Поделиться
-                  </button>
-                </div>
+                <>
+                  <div className="mt-1 flex flex-wrap gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => copyMessage(m.content, i)}
+                      className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand px-2 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+                      title="Скопировать"
+                    >
+                      {copiedIdx === i ? <Check size={12} /> : <Copy size={12} />}
+                      {copiedIdx === i ? 'Скопировано' : 'Копировать'}
+                    </button>
+                    <button
+                      onClick={() => shareMessage(m.content)}
+                      className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand px-2 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+                      title="Поделиться"
+                    >
+                      <Share2 size={12} /> Поделиться
+                    </button>
+
+                    <div className="relative" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={() =>
+                          setOpenLangMenu(openLangMenu === i ? null : i)
+                        }
+                        className="flex items-center gap-1 text-[11px] text-slate-400 hover:text-brand px-2 py-1 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800"
+                        title="Перевести"
+                      >
+                        <Languages size={12} />
+                        {translating === i ? 'Перевод…' : 'Перевод'}
+                      </button>
+
+                      {openLangMenu === i && (
+                        <div className="absolute bottom-full left-0 mb-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg py-1 z-30 min-w-[140px]">
+                          {LANGUAGES.map((l) => (
+                            <button
+                              key={l.code}
+                              onClick={() => translate(i, m.content, l.label)}
+                              className={`block w-full text-left px-3 py-1.5 text-xs hover:bg-slate-100 dark:hover:bg-slate-700 ${
+                                translations[i]?.lang === l.label
+                                  ? 'text-brand font-semibold'
+                                  : 'text-slate-700 dark:text-slate-200'
+                              }`}
+                            >
+                              {l.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {translations[i] && (
+                    <div className="mt-2 pt-2 border-t border-slate-200 dark:border-slate-700">
+                      <div className="text-[10px] uppercase tracking-wider text-slate-400 mb-1">
+                        {translations[i].lang}
+                      </div>
+                      <div className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap">
+                        {translations[i].text}
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>

@@ -1,5 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom'
-import { Home, FileText, Clock, Settings, Code2, LogOut, X, Sun, Moon } from 'lucide-react'
+import {
+  Home, FileText, Clock, Settings, Code2, LogOut, X, Sun, Moon,
+  BookOpen, GraduationCap, Layers, Network,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
 
@@ -16,26 +19,52 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const { theme, toggle } = useTheme()
   const navigate = useNavigate()
 
-  const items = [
+  const mainItems = [
     { to: '/', icon: Home, label: 'Главная' },
     { to: '/materials', icon: FileText, label: 'Мои материалы' },
     { to: '/history', icon: Clock, label: 'История' },
+  ]
+
+  const toolItems = [
+    { to: '/summary', icon: BookOpen, label: 'Конспект' },
+    { to: '/quiz', icon: GraduationCap, label: 'Экзаменатор' },
+    { to: '/flashcards', icon: Layers, label: 'Карточки' },
+    { to: '/mindmap', icon: Network, label: 'Mind map' },
+  ]
+
+  const bottomItems = [
     { to: '/settings', icon: Settings, label: 'Настройки' },
   ]
-  if (isDeveloper) items.push({ to: '/developer', icon: Code2, label: 'Developer' })
+  if (isDeveloper) bottomItems.push({ to: '/developer', icon: Code2, label: 'Developer' })
 
   const handleLogout = async () => {
     await signOut()
     navigate('/login')
   }
 
+  const renderItem = ({ to, icon: Icon, label }) => (
+    <NavLink
+      key={to}
+      to={to}
+      end={to === '/'}
+      onClick={onClose}
+      className={({ isActive }) =>
+        `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
+          isActive
+            ? 'bg-sidebarHover text-white'
+            : 'hover:bg-sidebarHover/60 hover:text-white'
+        }`
+      }
+    >
+      <Icon size={18} />
+      <span>{label}</span>
+    </NavLink>
+  )
+
   return (
     <>
       {mobileOpen && (
-        <div
-          onClick={onClose}
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-        />
+        <div onClick={onClose} className="fixed inset-0 bg-black/50 z-40 md:hidden" />
       )}
 
       <aside
@@ -62,31 +91,27 @@ export default function Sidebar({ mobileOpen, onClose }) {
         </div>
 
         <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
-          {items.map(({ to, icon: Icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={to === '/'}
-              onClick={onClose}
-              className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-                  isActive
-                    ? 'bg-sidebarHover text-white'
-                    : 'hover:bg-sidebarHover/60 hover:text-white'
-                }`
-              }
-            >
-              <Icon size={18} />
-              <span>{label}</span>
-            </NavLink>
-          ))}
+          {mainItems.map(renderItem)}
+
+          <div className="pt-4 pb-1 px-3">
+            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+              Инструменты ИИ
+            </div>
+          </div>
+          {toolItems.map(renderItem)}
+
+          <div className="pt-4 pb-1 px-3">
+            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
+              Прочее
+            </div>
+          </div>
+          {bottomItems.map(renderItem)}
         </nav>
 
         <div className="px-3 pb-3">
           <button
             onClick={toggle}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-sidebarHover/60 hover:text-white transition-colors"
-            aria-label="Переключить тему"
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
