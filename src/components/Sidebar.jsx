@@ -1,7 +1,7 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import {
   Home, FileText, Clock, Settings, Code2, LogOut, X, Sun, Moon,
-  BookOpen, GraduationCap, Layers, Network, MessageSquare, Plus,
+  BookOpen, GraduationCap, Layers, Network, MessageSquare, Plus, Calendar,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useTheme } from '../context/ThemeContext'
@@ -25,6 +25,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
     { to: '/', icon: Home, label: 'Главная' },
     { to: '/chats', icon: MessageSquare, label: 'История чатов' },
     { to: '/materials', icon: FileText, label: 'Мои материалы' },
+    { to: '/schedule', icon: Calendar, label: 'Расписание' },
   ]
 
   const toolItems = [
@@ -37,16 +38,8 @@ export default function Sidebar({ mobileOpen, onClose }) {
   const bottomItems = [{ to: '/settings', icon: Settings, label: 'Настройки' }]
   if (isDeveloper) bottomItems.push({ to: '/developer', icon: Code2, label: 'Developer' })
 
-  const handleLogout = async () => {
-    await signOut()
-    navigate('/login')
-  }
-
-  const startNewChat = () => {
-    setActiveChatId(null)
-    navigate('/')
-    onClose?.()
-  }
+  const handleLogout = async () => { await signOut(); navigate('/login') }
+  const startNewChat = () => { setActiveChatId(null); navigate('/'); onClose?.() }
 
   const renderItem = ({ to, icon: Icon, label }) => (
     <NavLink
@@ -56,14 +49,11 @@ export default function Sidebar({ mobileOpen, onClose }) {
       onClick={onClose}
       className={({ isActive }) =>
         `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors ${
-          isActive
-            ? 'bg-sidebarHover text-white'
-            : 'hover:bg-sidebarHover/60 hover:text-white'
+          isActive ? 'bg-sidebarHover text-white' : 'hover:bg-sidebarHover/60 hover:text-white'
         }`
       }
     >
-      <Icon size={18} />
-      <span>{label}</span>
+      <Icon size={18} /><span>{label}</span>
     </NavLink>
   )
 
@@ -72,26 +62,13 @@ export default function Sidebar({ mobileOpen, onClose }) {
       {mobileOpen && (
         <div onClick={onClose} className="fixed inset-0 bg-black/50 z-40 md:hidden" />
       )}
-
-      <aside
-        className={`
-          fixed md:sticky top-0 left-0 z-50
-          w-64 shrink-0 h-screen
-          bg-sidebar text-slate-300 flex flex-col
-          transform transition-transform duration-200
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-        `}
-      >
+      <aside className={`fixed md:sticky top-0 left-0 z-50 w-64 shrink-0 h-screen bg-sidebar text-slate-300 flex flex-col transform transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
         <div className="px-5 py-6 flex items-center gap-3 justify-between">
           <div className="flex items-center gap-3">
             <Logo className="w-9 h-9" />
             <span className="text-white text-xl font-bold">Стади</span>
           </div>
-          <button
-            onClick={onClose}
-            className="md:hidden text-slate-400 hover:text-white"
-            aria-label="Закрыть меню"
-          >
+          <button onClick={onClose} className="md:hidden text-slate-400 hover:text-white">
             <X size={20} />
           </button>
         </div>
@@ -99,7 +76,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
         <div className="px-3 mb-3">
           <button
             onClick={startNewChat}
-            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-brand hover:bg-blue-600 text-white text-sm font-medium transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2.5 rounded-lg bg-brand hover:bg-blue-600 text-white text-sm font-medium"
           >
             <Plus size={16} /> Новый чат
           </button>
@@ -107,18 +84,12 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
         <nav className="flex-1 px-3 space-y-1 overflow-y-auto">
           {mainItems.map(renderItem)}
-
           <div className="pt-4 pb-1 px-3">
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              Инструменты ИИ
-            </div>
+            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Инструменты ИИ</div>
           </div>
           {toolItems.map(renderItem)}
-
           <div className="pt-4 pb-1 px-3">
-            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">
-              Прочее
-            </div>
+            <div className="text-[10px] uppercase tracking-wider text-slate-500 font-semibold">Прочее</div>
           </div>
           {bottomItems.map(renderItem)}
         </nav>
@@ -126,7 +97,7 @@ export default function Sidebar({ mobileOpen, onClose }) {
         <div className="px-3 pb-3">
           <button
             onClick={toggle}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-sidebarHover/60 hover:text-white transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-sidebarHover/60 hover:text-white"
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             <span>{theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}</span>
@@ -135,12 +106,8 @@ export default function Sidebar({ mobileOpen, onClose }) {
 
         <div className="p-4 border-t border-slate-800">
           <div className="text-xs text-slate-400 truncate mb-3">{user?.email}</div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors"
-          >
-            <LogOut size={16} />
-            Выйти
+          <button onClick={handleLogout} className="flex items-center gap-2 text-sm text-slate-400 hover:text-white">
+            <LogOut size={16} /> Выйти
           </button>
         </div>
       </aside>

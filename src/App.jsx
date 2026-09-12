@@ -11,6 +11,7 @@ import Summary from './pages/Summary'
 import Quiz from './pages/Quiz'
 import Flashcards from './pages/Flashcards'
 import MindMap from './pages/MindMap'
+import Schedule from './pages/Schedule'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { useAuth } from './context/AuthContext'
@@ -20,11 +21,7 @@ const withLayout = (el) => <ProtectedRoute><Layout>{el}</Layout></ProtectedRoute
 export default function App() {
   const { user, loading } = useAuth()
   if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-slate-500">
-        Загрузка…
-      </div>
-    )
+    return <div className="h-screen flex items-center justify-center text-slate-500">Загрузка…</div>
   }
 
   return (
@@ -35,6 +32,7 @@ export default function App() {
       <Route path="/chat/:id" element={withLayout(<ChatView />)} />
       <Route path="/materials" element={withLayout(<Materials />)} />
       <Route path="/history" element={withLayout(<History />)} />
+      <Route path="/schedule" element={withLayout(<Schedule />)} />
       <Route path="/settings" element={withLayout(<Settings />)} />
       <Route path="/summary" element={withLayout(<Summary />)} />
       <Route path="/quiz" element={withLayout(<Quiz />)} />
@@ -42,11 +40,7 @@ export default function App() {
       <Route path="/mindmap" element={withLayout(<MindMap />)} />
       <Route
         path="/developer"
-        element={
-          <ProtectedRoute developerOnly>
-            <Layout><Developer /></Layout>
-          </ProtectedRoute>
-        }
+        element={<ProtectedRoute developerOnly><Layout><Developer /></Layout></ProtectedRoute>}
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
